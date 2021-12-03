@@ -1,3 +1,5 @@
+import time
+
 previousMeasurement = 0
 timesIncreased = 0
 
@@ -14,6 +16,7 @@ previousSum = 0
 timesIncreased2 = 0
 
 with open('Day1Input1.txt') as input:
+    t1 = time.time_ns()
     lines = input.readlines()
     for i in range(len(lines) - 1):
         if 0 < i < len(lines):
@@ -21,5 +24,6 @@ with open('Day1Input1.txt') as input:
             if sum > previousSum != 0:
                 timesIncreased2 += 1
             previousSum = sum
-
+t2 = time.time_ns()
 print('result challenge 2: ', timesIncreased2)
+print('time needed: ', t2-t1)

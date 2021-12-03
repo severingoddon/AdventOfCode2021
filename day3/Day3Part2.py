@@ -1,59 +1,60 @@
-first, second, third, fourth, fifth = [], [], [], [], []
-bits = [first, second, third, fourth, fifth]
-allValues = []
+import copy
+
+data, data2 = [], []
+lengthOfChars = 0
 
 
 def convert(s):
     new = ""
-    for x in s:
-        new += x
+    for x in s: new += x
     return new
 
 
 def split(word):
-    return [char for char in word]
+    return [x for x in word]
 
 
-def findNumbersWithHigherOccurence(fullList, index):
-    currentBitList = bits[index]
-    zeroCount = currentBitList.count("0")
-    oneCount = bits[index].count("1")
-    moreCommonBit = 0
+def findCommonBit(data_list, index):
+    listOfCurrentBits = []
+    common_Bit = 0
+    for row in data_list:
+        listOfCurrentBits.append(row[index])
+    zeroCount = listOfCurrentBits.count("0")
+    oneCount = listOfCurrentBits.count("1")
+    if zeroCount > oneCount: common_Bit = "0"
+    if zeroCount < oneCount: common_Bit = "1"
     if zeroCount == oneCount:
-        moreCommonBit = 1
-    if zeroCount > oneCount:
-        moreCommonBit = 0
-    if zeroCount < oneCount:
-        moreCommonBit = 1
+        common_Bit = "1"
+    return common_Bit
 
-    elementsToRemove = []
-    if moreCommonBit == 1:
-        for number in fullList:
-            if number[index] == "0":
-                elementsToRemove.append(number)
-    if moreCommonBit == 0:
-        for number in fullList:
-            if number[index] == "1":
-                elementsToRemove.append(number)
-    newList = []
-    for number in fullList:
-        if not elementsToRemove.__contains__(number):
-            newList.append(number)
-    return newList
+
+def calculate(data_list, lookingForOxygen):
+    for i in range(lengthOfChars):
+        if len(data_list) > 1:
+            common_Bit = findCommonBit(data_list=data_list, index=i)
+            new_data = []
+            for row in data_list:
+                if lookingForOxygen:
+                    if row[i] == common_Bit: new_data.append(row)
+                else:
+                    if row[i] != common_Bit: new_data.append(row)
+            data_list.clear()
+            data_list = copy.deepcopy(new_data)
+        else:
+            break
+    return data_list
 
 
 with open('input.txt') as file:
     for line in file:
         chars = split(line)
-        if len(chars) > 5:
+        if len(chars) > 12:
             chars.pop(len(chars) - 1)
-        allValues.append(convert(chars))
+        data.append(chars)
+        data2.append(chars)
+    lengthOfChars = len(chars)
 
-        for i in range(len(chars)):
-            bits[i].append(chars[i])
+oxygen_generator_rating = calculate(data, lookingForOxygen=True)
+co2_scrubber_rating = calculate(data2, lookingForOxygen=False)
 
-for i in range(len(bits)):
-    if len(allValues) > 1:
-        allValues = findNumbersWithHigherOccurence(allValues, i)
-
-print(allValues)
+print(int(convert(oxygen_generator_rating[0]), 2) * int(convert(co2_scrubber_rating[0]), 2))
