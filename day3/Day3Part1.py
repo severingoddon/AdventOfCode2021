@@ -1,13 +1,13 @@
 def split(word):
     return [char for char in word]
-with open('input.txt') as file:
-    for line in file:
+
 
 first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelveth = [], [], [], [], [], [], [], [], [], [], [], []
 bits = [first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelveth]
 gammaRate, epsilonRate = "", ""
 
-
+with open('input.txt') as file:
+    for line in file:
         chars = split(line)
         chars.pop(len(chars) - 1)
         for i in range(len(chars)):
