@@ -3,14 +3,14 @@ import copy
 numbers = ""
 boards = []
 count = 0
-winnerBoard = None
+
 
 
 def calculateScore(board):
     score = 0
     for numberLine in board:
         for number in numberLine:
-            if number[1] == False:
+            if not number[1]:
                 score = score + int(number[0])
     print('score is: ', score)
 
@@ -27,12 +27,10 @@ def checkBoards():
     for board in boards:
         if checkVertical(board):
             calculateScore(board)
-            return True
-        if checkHorizontal(board):
+            boards.remove(board)
+        elif checkHorizontal(board):
             calculateScore(board)
-            return True
-    return False
-
+            boards.remove(board)
 
 def checkVertical(board):
     for i in range(5):
@@ -43,7 +41,6 @@ def checkVertical(board):
                 count += 1
         if count == 5:
             return True
-    count = 0
     return False
 
 
@@ -55,7 +52,6 @@ def checkHorizontal(board):
                 count += 1
         if count == 5:
             return True
-    count = 0
     return False
 
 
@@ -81,8 +77,6 @@ boards.append(board)
 numbersWithoutComma = numbers.split(",")
 for number in numbersWithoutComma:
     markNumber(number)
-    if checkBoards():
-        print(number)
-        break
-
-
+    checkBoards()
+    print(number)
+    print(" ")
