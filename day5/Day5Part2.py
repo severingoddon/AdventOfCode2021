@@ -100,3 +100,4 @@ with open('input.txt') as file:
 buildGrid()
 markLines()
 print(countDangerousAreas())
+
