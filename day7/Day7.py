@@ -5,10 +5,8 @@ def findOptimumPos(part2):
         for crab in crabs:
             difference = crab - pos
             if difference < 0: difference *= -1
-            if part2:
-                consumption += sum(range(difference + 1))
-            else:
-                consumption += difference
+            if part2: consumption += sum(range(difference + 1))
+            else: consumption += difference
         if consumption < minimumFuelConsumption: minimumFuelConsumption = consumption
     print("Minimum consumption is: ", minimumFuelConsumption)
 
