@@ -1,24 +1,21 @@
-def findOptimumPos(part2):
-    totalIterations = 0
-    minimumFuelConsumption = sum(crabs) * 1000
-    for pos in range(max(crabs)):
-        consumption = 0
-        for crab in crabs:
-            totalIterations+=1
-            difference = crab - pos
-            if difference < 0: difference *= -1
-            if part2: consumption += sum(range(difference + 1))
-            else: consumption += difference
-        if consumption < minimumFuelConsumption: minimumFuelConsumption = consumption
-    print("Minimum consumption is: ", minimumFuelConsumption)
-    print("Iterations: ",totalIterations)
+import statistics
 
 
-crabs = []
+def findOptimumPos(part2, crabs):
+    consumption = 0
+    mean = int(statistics.mean(crabs))
+    median = int(statistics.median(crabs))
+    for crab in crabs:
+        if part2: difference = crab - mean
+        else: difference = crab - median
+        if part2: consumption += sum(range(abs(difference) + 1))
+        else: consumption += abs(difference)
+    print(consumption)
+
 
 with open('input.txt') as file:
+    crabsArray = []
     for file_line in file:
-        for x in file_line.split(","): crabs.append(int(x))
-print(len(crabs))
-findOptimumPos(part2=False)
-findOptimumPos(part2=True)
+        for x in file_line.split(","): crabsArray.append(int(x))
+    findOptimumPos(part2=False, crabs=crabsArray)
+    findOptimumPos(part2=True, crabs=crabsArray)
