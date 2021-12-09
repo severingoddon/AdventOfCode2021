@@ -1,10 +1,12 @@
 import itertools
 import collections
+import threading
 
 from day8.Pattern import Pattern
 from day8.Numbers import MyNumbers
 
 allPatterns = []
+count = 0
 
 
 def createAllPatterns():
@@ -20,6 +22,7 @@ def findPattern(signals):
         for signal in signals:
             if checkSignalWithPattern(pattern, signal): correctCount += 1
         if correctCount > 9:
+            decodeValues(pattern,values)
             return pattern
 
 
@@ -47,12 +50,12 @@ allNumbers = MyNumbers.allNumbers
 createAllPatterns()
 
 with open('input.txt') as file:
-    count = 0
     for i, file_line in enumerate(file):
         print("calculating line ", i, " of 200")
         splitted = file_line.split(" | ")
         signals = splitted[0].split()
         values = splitted[1].split()
+        x = threading.Thread(target=findPattern(signals))
         p = findPattern(signals)
         count += decodeValues(p, values)
 print(count)
