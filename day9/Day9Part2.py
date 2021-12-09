@@ -1,5 +1,5 @@
 height_map = []
-lowPoints = [] # cointains points like [2, 4, 3] means 2 is the point, 4 is row and 3 is column
+lowPoints = []
 sum = []
 basinSizes = []
 alreadyVisitedPoints = []
