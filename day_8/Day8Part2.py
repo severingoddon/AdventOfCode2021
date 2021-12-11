@@ -2,8 +2,8 @@ import itertools
 import collections
 import threading
 
-from day8.Pattern import Pattern
-from day8.Numbers import MyNumbers
+from day_8.Pattern import Pattern
+from day_8.Numbers import MyNumbers
 
 allPatterns = []
 count = 0
