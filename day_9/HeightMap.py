@@ -24,7 +24,7 @@ class App(tk.Tk):
                 y2 = y1 + self.cellheight
                 self.rect[row,column] = self.canvas.create_rectangle(x1,y1,x2,y2, fill="blue", tags="rect")
 
-        self.redraw(2)
+        self.redraw(5)
 
     def redraw(self, delay):
         row = self.b[self.count][0]
