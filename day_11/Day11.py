@@ -1,218 +1,98 @@
-octopusGrid = []
-flashCount = 0
-tester = 0
-
-def doStep(flashCount):
-    # increase all octopus energy levels
-    for row in range(10):
-        for column in range(10):
-            octopusGrid[row][column] += 1
-
-    alreadyFlashed = []
-    # check all octopuses for flashing
-
-    while True:
-        print("tadaa")
-        localCount = 0
-        for row in range(10):
-            for column in range(10):
-                rowcolumn = str(row)+str(column)
-                #test = octopusGrid[row][column]
-                if octopusGrid[row][column] == 9 and alreadyFlashed.count(rowcolumn) == 0:
-                    result = increase_or_flash(row, column, flashCount)
-                    flashCount += result[0]
-                    localCount += 1
-                    for flashed in result[1]:
-                        alreadyFlashed.append(flashed)
-        if localCount == 0: break
-
-    test = len(alreadyFlashed)
-    alreadyFlashed.clear()
-    return flashCount, test
+from day_11.Squid import Squid
+import copy
+squidGrid = []
+allSquids = []
+stepcount = 0
 
 
-def increase_or_flash(i,j, flashCount):
-    alreadyFlashed = [str(i) + str(j)]
-    octopusGrid[i][j] = 0
-    flashCount += 1
-    if i == 0 and j == 0:  # upper left corner
-        if octopusGrid[i + 1][j] == 9:
-            flashCount +=1
-            octopusGrid[i + 1][j] = 0
-            alreadyFlashed.append(str(i+1) + str(j))
-        if octopusGrid[i][j+1] == 9:
-            flashCount +=1
-            octopusGrid[i][j+1] = 0
-            alreadyFlashed.append(str(i) + str(j+1))
-        if octopusGrid[i+1][j+1] == 9:
-            flashCount +=1
-            octopusGrid[i+1][j+1] = 0
-            alreadyFlashed.append(str(i+1) + str(j+1))
+def doStep(stepcount):
+    for squid in allSquids: squid.check()
+    for squid in allSquids:
+        if not squid.hasFlashed: squid.increaseCount()
+    checkIfAllFlashed(stepcount)
+    for squid in allSquids: squid.hasFlashed = False
 
-    elif i == 0 and j == len(octopusGrid[0]) - 1:  # upper right corner
-        if octopusGrid[i + 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j] = 0
-            alreadyFlashed.append(str(i + 1) + str(j))
-        if octopusGrid[i][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j - 1] = 0
-            alreadyFlashed.append(str(i) + str(j - 1))
-        if octopusGrid[i + 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j - 1] = 0
-            alreadyFlashed.append(str(i + 1) + str(j - 1))
 
-    elif i == len(octopusGrid) - 1 and j == 0:  # lower left corner
-        if octopusGrid[i - 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j] = 0
-            alreadyFlashed.append(str(i - 1) + str(j))
-        if octopusGrid[i][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j + 1] = 0
-            alreadyFlashed.append(str(i) + str(j + 1))
-        if octopusGrid[i - 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j + 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j + 1))
+def checkIfAllFlashed(stepcount):
+    if stepcount == 100:
+        print("Count of all octopus flashes after 100 steps: ", calculateSumOfFlashes())  # solution of part 1
+    flashCount = 0
+    for squid in allSquids:
+        if squid.hasFlashed: flashCount += 1
+    if flashCount == len(allSquids):
+        print("First step where all octopuses flashed at the same time ",stepcount) # solution of part 2
+        quit(0)
 
-    elif i == len(octopusGrid) - 1 and j == len(octopusGrid[0]) - 1:  # lower right corner
-        if octopusGrid[i - 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j] = 0
-            alreadyFlashed.append(str(i - 1) + str(j))
-        if octopusGrid[i][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j - 1] = 0
-            alreadyFlashed.append(str(i) + str(j - 1))
-        if octopusGrid[i - 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j - 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j - 1))
 
-    elif i == 0 and 0 < j < len(octopusGrid[0]) - 1:  # upper row
-        if octopusGrid[i + 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j] = 0
-            alreadyFlashed.append(str(i + 1) + str(j))
-        if octopusGrid[i][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j + 1] = 0
-            alreadyFlashed.append(str(i) + str(j + 1))
-        if octopusGrid[i][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j - 1] = 0
-            alreadyFlashed.append(str(i) + str(j - 1))
-        if octopusGrid[i + 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j - 1] = 0
-            alreadyFlashed.append(str(i + 1) + str(j - 1))
-        if octopusGrid[i + 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j + 1] = 0
-            alreadyFlashed.append(str(i + 1) + str(j + 1))
+def calculateSumOfFlashes():
+    sum_of_flashes = 0
+    for squid in allSquids:
+        sum_of_flashes += squid.total_flash_count
+    return sum_of_flashes
 
-    elif 0 < i < len(octopusGrid) - 1 and j == 0:  # left column
-        if octopusGrid[i + 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j] = 0
-            alreadyFlashed.append(str(i + 1) + str(j))
-        if octopusGrid[i-1][j] == 9:
-            flashCount += 1
-            octopusGrid[i-1][j] = 0
-            alreadyFlashed.append(str(i-1) + str(j))
-        if octopusGrid[i][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j + 1] = 0
-            alreadyFlashed.append(str(i) + str(j + 1))
-        if octopusGrid[i + 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j + 1] = 0
-            alreadyFlashed.append(str(i + 1) + str(j + 1))
-        if octopusGrid[i - 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j + 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j + 1))
 
-    elif 0 < i < len(octopusGrid) - 1 and j == len(octopusGrid[0]) - 1:  # right column
-        if octopusGrid[i + 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j] = 0
-            alreadyFlashed.append(str(i + 1) + str(j))
-        if octopusGrid[i-1][j] == 9:
-            flashCount += 1
-            octopusGrid[i-1][j] = 0
-            alreadyFlashed.append(str(i-1) + str(j))
-        if octopusGrid[i][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j - 1] = 0
-            alreadyFlashed.append(str(i) + str(j - 1))
-        if octopusGrid[i + 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j - 1] = 0
-            alreadyFlashed.append(str(i + 1) + str(j - 1))
-        if octopusGrid[i - 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j - 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j - 1))
+def setNeighbours(squid):
+    name = squid.name
+    i, j = int(name[0]), int(name[1])
+    for s in allSquids:
+        if i == 0 and j == 0:  # upper left corner
+            if s.name == str(i+1)+str(j): squid.neighbours.append(s)
+            elif s.name == str(i)+str(j+1): squid.neighbours.append(s)
+            elif s.name == str(i+1) + str(j + 1): squid.neighbours.append(s)
 
-    elif i == len(octopusGrid) - 1 and 0 < j < len(octopusGrid[0]) - 1:  # lower row
-        if octopusGrid[i][j+1] == 9:
-            flashCount += 1
-            octopusGrid[i][j+1] = 0
-            alreadyFlashed.append(str(i) + str(j+1))
-        if octopusGrid[i-1][j] == 9:
-            flashCount += 1
-            octopusGrid[i-1][j] = 0
-            alreadyFlashed.append(str(i-1) + str(j))
-        if octopusGrid[i][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j - 1] = 0
-            alreadyFlashed.append(str(i) + str(j - 1))
-        if octopusGrid[i - 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j - 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j - 1))
-        if octopusGrid[i - 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j + 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j + 1))
+        elif i == 0 and j == len(squidGrid[0]) - 1:  # upper right corner
+            if s.name == str(i + 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j - 1): squid.neighbours.append(s)
 
-    else:  # everything in the middle of the map
-        if octopusGrid[i][j+1] == 9:
-            flashCount += 1
-            octopusGrid[i][j+1] = 0
-            alreadyFlashed.append(str(i) + str(j+1))
-        if octopusGrid[i-1][j] == 9:
-            flashCount += 1
-            octopusGrid[i-1][j] = 0
-            alreadyFlashed.append(str(i-1) + str(j))
-        if octopusGrid[i][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i][j - 1] = 0
-            alreadyFlashed.append(str(i) + str(j - 1))
-        if octopusGrid[i - 1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j - 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j - 1))
-        if octopusGrid[i - 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i - 1][j + 1] = 0
-            alreadyFlashed.append(str(i - 1) + str(j + 1))
-        if octopusGrid[i+1][j - 1] == 9:
-            flashCount += 1
-            octopusGrid[i+1][j - 1] = 0
-            alreadyFlashed.append(str(i+1) + str(j - 1))
-        if octopusGrid[i + 1][j] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j] = 0
-            alreadyFlashed.append(str(i + 1) + str(j))
-        if octopusGrid[i + 1][j + 1] == 9:
-            flashCount += 1
-            octopusGrid[i + 1][j + 1] = 0
-            alreadyFlashed.append(str(i + 1) + str(j + 1))
-    return flashCount, alreadyFlashed
+        elif i == len(squidGrid) - 1 and j == 0:  # lower left corner
+            if s.name == str(i-1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j + 1): squid.neighbours.append(s)
+
+        elif i == len(squidGrid) - 1 and j == len(squidGrid[0]) - 1:  # lower right corner
+            if s.name == str(i - 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j - 1): squid.neighbours.append(s)
+
+        elif i == 0 and 0 < j < len(squidGrid[0]) - 1:  # upper row
+            if s.name == str(i+1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j + 1): squid.neighbours.append(s)
+
+        elif 0 < i < len(squidGrid) - 1 and j == 0:  # left column
+            if s.name == str(i + 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j + 1): squid.neighbours.append(s)
+
+        elif 0 < i < len(squidGrid) - 1 and j == len(squidGrid[0]) - 1:  # right column
+            if s.name == str(i + 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j - 1): squid.neighbours.append(s)
+
+        elif i == len(squidGrid) - 1 and 0 < j < len(squidGrid[0]) - 1:  # lower row
+            if s.name == str(i) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j + 1): squid.neighbours.append(s)
+
+        else:  # everything in the middle of the map
+            if s.name == str(i) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i - 1) + str(j + 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j - 1): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j): squid.neighbours.append(s)
+            elif s.name == str(i + 1) + str(j + 1): squid.neighbours.append(s)
+    return squid
 
 
 with open("inputFile.txt") as file:
@@ -220,13 +100,22 @@ with open("inputFile.txt") as file:
         grid_line = []
         for o in file_line.strip():
             grid_line.append(int(o))
-        octopusGrid.append(grid_line)
-
-print("size is: ", len(octopusGrid),"x",len(octopusGrid[0]))
+        squidGrid.append(copy.deepcopy(grid_line))
+        grid_line.clear()
 
 for i in range(10):
-    #flashCount += doStep(flashCount)
-    tester += doStep(flashCount)[1]
+    for j in range(10):
+        squid = Squid(int(squidGrid[i][j]), False, str(i)+str(j))
+        allSquids.append(squid)
 
-print(tester)
+for squid in allSquids:
+    squid = setNeighbours(squid)
+
+# --------------------------------finished data preparation-----------------------------------
+
+while True:
+    stepcount += 1
+    doStep(stepcount)
+
+
 
