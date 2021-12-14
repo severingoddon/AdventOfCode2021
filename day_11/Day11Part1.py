@@ -2,15 +2,33 @@ from day_11.Squid import Squid
 import copy
 squidGrid = []
 allSquids = []
+stepcount = 0
 
 
-def doStep():
+def doStep(stepcount):
+    for squid in allSquids: squid.check()
     for squid in allSquids:
-        name = squid.name
-        squid.increaseCount()
-    for squid in allSquids:
-        squid.check()
+        if not squid.hasFlashed: squid.increaseCount()
+    checkIfAllFlashed(stepcount)
+    for squid in allSquids: squid.hasFlashed = False
 
+
+def checkIfAllFlashed(stepcount):
+    if stepcount == 100:
+        print("Count of all octopus flashes after 100 steps: ", calculateSumOfFlashes())  # solution of part 1
+    flashCount = 0
+    for squid in allSquids:
+        if squid.hasFlashed: flashCount += 1
+    if flashCount == len(allSquids):
+        print("First step where all octopuses flashed at the same time ",stepcount) # solution of part 2
+        quit(0)
+
+
+def calculateSumOfFlashes():
+    sum_of_flashes = 0
+    for squid in allSquids:
+        sum_of_flashes += squid.total_flash_count
+    return sum_of_flashes
 
 
 def setNeighbours(squid):
@@ -20,7 +38,7 @@ def setNeighbours(squid):
         if i == 0 and j == 0:  # upper left corner
             if s.name == str(i+1)+str(j): squid.neighbours.append(s)
             elif s.name == str(i)+str(j+1): squid.neighbours.append(s)
-            elif s.name == str(i+1) + str(j + 1):squid.neighbours.append(s)
+            elif s.name == str(i+1) + str(j + 1): squid.neighbours.append(s)
 
         elif i == 0 and j == len(squidGrid[0]) - 1:  # upper right corner
             if s.name == str(i + 1) + str(j): squid.neighbours.append(s)
@@ -95,15 +113,9 @@ for squid in allSquids:
 
 # --------------------------------finished data preparation-----------------------------------
 
-for i in range(2):
-    doStep()
-
-sum_of_flashes = 0
-for squid in allSquids:
-    sum_of_flashes += squid.total_flash_count
-
-
-print(sum_of_flashes)
+while True:
+    stepcount += 1
+    doStep(stepcount)
 
 
 
