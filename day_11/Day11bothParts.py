@@ -2,15 +2,25 @@ from day_11.Squid import Squid
 import copy
 squidGrid = []
 allSquids = []
-stepcount = 0
+algorithmSteps = []
 
 
 def doStep(stepcount):
+    rowInStep = []
     for squid in allSquids: squid.check()
     for squid in allSquids:
         if not squid.hasFlashed: squid.increaseCount()
-    checkIfAllFlashed(stepcount)
+    for squid in allSquids:
+        if squid.hasFlashed:
+            name = squid.name
+            rowcolumn = [int(name[0]),int(name[1])]
+            rowInStep.append(rowcolumn)
+    algorithmSteps.append(rowInStep)
+
+    if checkIfAllFlashed(stepcount):
+        return algorithmSteps, True
     for squid in allSquids: squid.hasFlashed = False
+    return algorithmSteps, False
 
 
 def checkIfAllFlashed(stepcount):
@@ -21,7 +31,8 @@ def checkIfAllFlashed(stepcount):
         if squid.hasFlashed: flashCount += 1
     if flashCount == len(allSquids):
         print("First step where all octopuses flashed at the same time ",stepcount) # solution of part 2
-        quit(0)
+        return True
+    return False
 
 
 def calculateSumOfFlashes():
@@ -113,9 +124,15 @@ for squid in allSquids:
 
 # --------------------------------finished data preparation-----------------------------------
 
-while True:
-    stepcount += 1
-    doStep(stepcount)
+def doWork():
+    stepcount = 0
+    while True:
+        stepcount += 1
+        result = doStep(stepcount)
+        if result[1]:
+            return result[0]
 
+
+doWork()
 
 
